@@ -1,9 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-quotes */
 /* eslint-disable quotes */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable no-trailing-spaces */
-import React from 'react';
-import { KeyboardAvoidingView, Text, View ,Keyboard,TouchableOpacity} from 'react-native';
+import React,{ useContext, useEffect } from 'react';
+import { KeyboardAvoidingView, Text, View ,Keyboard,TouchableOpacity, Alert} from 'react-native';
 import { BackgroundRegister } from '../components/BackgroundRegister';
 import { Inputs } from '../components/Input';
 import  Icon from 'react-native-vector-icons/Ionicons';
@@ -12,7 +13,8 @@ import { FAB } from 'react-native-elements';
 import {useFormik} from 'formik';
 import * as Yup from 'yup';
 import { StackScreenProps } from '@react-navigation/stack';
-import { Logo } from '../components/Logo';
+//import { Logo } from '../components/Logo';
+import { AuthContext } from '../context/AuthContext';
 
 
 
@@ -21,11 +23,14 @@ interface Props extends StackScreenProps<any,any> {}
 
 export const RegisterScreen = ({ navigation }:Props) => {
 
+    const {signUp,errorMessage,removeError} = useContext(AuthContext);
+
     
     const formik = useFormik({
-        onSubmit:(formData) => {
-            console.log(formData);
+        onSubmit:({email,username,password}) => {
+            //console.log(formData);
             Keyboard.dismiss();
+            signUp({correo:email,nombre:username,password});
 
         },
         initialValues:{
@@ -37,6 +42,23 @@ export const RegisterScreen = ({ navigation }:Props) => {
         validationSchema:Yup.object(validationSchema()),
     
     });
+
+    useEffect(() => {
+
+        if (errorMessage.length === 0) return;
+
+        Alert.alert(
+        'Register Fail! 😔', 
+        'Oops something went wrong some of the fields is not correct 😱',
+        [
+            {
+                text: 'OK',
+                onPress:removeError
+            }
+        ]
+        );
+    
+    }, [errorMessage]);
 
     const onRegister = (value:any) => {
         
@@ -59,7 +81,7 @@ export const RegisterScreen = ({ navigation }:Props) => {
 
             <View style={loginstyles.registerContainer}>
 
-            <Logo />
+            {/* <Logo /> */}
 
             <Text style={loginstyles.title}>Register</Text>
 

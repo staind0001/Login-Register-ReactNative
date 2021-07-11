@@ -16,7 +16,7 @@ export const loginstyles = StyleSheet.create({
         paddingHorizontal:30,
         justifyContent:'center',
         height:600,
-        marginBottom:20,
+        marginBottom:40,
 
     },
     title:{

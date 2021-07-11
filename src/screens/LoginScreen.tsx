@@ -1,11 +1,12 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable quotes */
 /* eslint-disable comma-dangle */
 /* eslint-disable jsx-quotes */
 /* eslint-disable no-trailing-spaces */
-import React from 'react';
+import React,{ useContext,useEffect } from 'react';
 import  Icon from 'react-native-vector-icons/Ionicons';
-import { View, TouchableOpacity,KeyboardAvoidingView, Text, Keyboard} from 'react-native';
+import { View, TouchableOpacity,KeyboardAvoidingView, Text, Keyboard, Alert} from 'react-native';
 
 import {useFormik} from 'formik';
 import * as Yup from 'yup';
@@ -16,6 +17,9 @@ import { loginstyles } from '../theme/loginTheme';
 import { Inputs } from '../components/Input';
 import { FAB } from 'react-native-elements';
 import { StackScreenProps } from '@react-navigation/stack';
+import { AuthContext } from '../context/AuthContext';
+
+
 
 
 
@@ -25,10 +29,15 @@ interface Props extends StackScreenProps<any,any> {}
 
 export const LoginScreen = ({ navigation }:Props) => {
 
+    const {signIn,errorMessage,removeError} = useContext(AuthContext);
+
     const formik = useFormik({
-        onSubmit:(formData) => {
-            console.log(formData);
+        
+        onSubmit:({email,password}) => {
+            //console.log(formData);
             Keyboard.dismiss();
+            signIn({correo:email,password});
+           
 
         },
         initialValues:{
@@ -39,10 +48,29 @@ export const LoginScreen = ({ navigation }:Props) => {
     
     });
 
+    useEffect(() => {
+
+        if (errorMessage.length === 0) return;
+
+        Alert.alert(
+        'Login Fail! 😔', 
+        'Oops something went wrong 😱',
+        [
+            {
+                text: 'OK',
+                onPress:removeError
+            }
+        ]
+
+        );
+       
+    }, [errorMessage]);
+
     const onLogin = (value:any) => {
         
         formik.handleSubmit(value);
         Keyboard.dismiss();
+       
 
     };
 
